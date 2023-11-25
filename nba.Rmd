@@ -14,6 +14,7 @@ output:
 # Packages
 library(dplyr)
 library(readr)
+library(shiny)
 library(flexdashboard)
 library(ggplot2)
 
@@ -95,7 +96,7 @@ renderGauge({
 ```
 
 
-### Free Throw percentage
+### Free Throw Percentage
 ```{r}
 renderGauge({
   gauge(value = 100 * current()$FT_PCT,
