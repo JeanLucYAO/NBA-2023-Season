@@ -1,0 +1,200 @@
+---
+title: "NBA Statistics"
+runtime: shiny
+output:
+  flexdashboard::flex_dashboard:
+    theme: 
+      version: 5
+      bootswatch: default
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+
+# Packages
+library(dplyr)
+library(readr)
+library(flexdashboard)
+library(ggplot2)
+
+# Load datasets
+season_19_20 <- read_csv("Data/2019-20.csv")
+
+# Helpers
+donut <- function(pct) {
+  # Create data.
+  data <- data.frame(
+    category = c("A", "B"),
+    count = c(pct, 1 - pct)
+  )
+  
+  # Compute the cumulative percentages (top of each rectangle)
+  data$ymax = cumsum(data$count)
+  
+  # Compute the bottom of each rectangle
+  data$ymin = c(0, head(data$ymax, n = -1))
+  
+  # Compute label position
+  data$labelPosition <- (data$ymax + data$ymin) / 2
+  
+  # Compute a good label
+  data$label <- c(paste0(100 * pct, "%"), "")
+  
+  # plot
+  ggplot(data, aes(ymax = ymax, ymin = ymin, xmax = 4, xmin = 3, fill = category)) +
+    scale_fill_manual(values=c("#5296fb", "#d7dde5")) +
+    geom_rect() +
+    geom_label(x = 3.5, aes(y = labelPosition, label = label), label.size = NA, size = 4) +
+    coord_polar(theta = "y") +
+    xlim(c(2, 4)) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+```{r}
+selectInput("players",
+            "PLAYERS",
+            choices = unique(season_19_20$PLAYER_NAME))
+
+current <- reactive({
+  season_19_20 %>% filter(PLAYER_NAME == input$players)
+})
+```
+
+
+
+Row
+-----------------------------------------------------------------------
+
+### Team 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$TEAM_ABBREVIATION,
+    caption = "Team",
+    icon = "fa-shirt",
+    color = "primary"
+  )
+})
+```
+
+
+### Age 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$AGE,
+    caption = "Years old",
+    icon = "fa-calendar",
+    color = "primary"
+  )
+})
+```
+
+
+### Minutes per Game 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$MIN,
+    caption = "Minutes Per Game",
+    icon = "fa-clock",
+    color = "primary"
+  )
+})
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Field Goal Percentage
+```{r}
+renderGauge({
+  gauge(value = 100 * current()$FG_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(40, 100), warning = c(20, 40), danger = c(0, 20),
+                   colors = c("primary", "secondary", "danger"))
+  )
+})
+```
+
+
+### Free Throw percentage
+```{r}
+renderGauge({
+  gauge(value = 100 * current()$FT_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(74, 100), warning = c(60, 74), danger = c(0, 60),
+                   colors = c("primary", "secondary", "danger"))
+  )
+})
+```
+
+
+### 3 Point Percentage
+```{r}
+renderGauge({
+  gauge(value = 100 * current()$FG3_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(30, 100), warning = c(20, 30), danger = c(0, 20),
+                   colors = c("primary", "secondary", "danger"))
+  )
+})
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Points per Game 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$PTS,
+    caption = "Points Per Game",
+    icon = "fa-basketball",
+    color = "primary"
+  )
+})
+```
+
+
+### Assists per Game 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$AST,
+    caption = "Assists Per Game",
+    icon = "fa-handshake-angle",
+    color = "primary"
+  )
+})
+```
+
+
+### Rebounds per Game 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$REB,
+    caption = "Rebounds Per Game",
+    icon = "fa-hands-holding-circle",
+    color = "primary"
+  )
+})
+```
+
+
+
