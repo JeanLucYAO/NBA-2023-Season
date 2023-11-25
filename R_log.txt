@@ -1,0 +1,39 @@
+── Preparing for deployment ────────────────────────────────────────────────────
+Error in `rsconnect::deployApp()`:
+! This directory has been previously deployed in multiple places.
+Please use `appName`, `server` or `account` to disambiguate.
+Known applications:
+• nba_stats (server: shinyapps.io / username: 78luxg-jean0luc-yao):
+  <https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/>
+• nba_stats (server: shinyapps.io / username: 78luxg-jean0luc-yao):
+  <https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/>
+Backtrace:
+    ▆
+ 1. └─rsconnect::deployApp("C:\\Users\\DELL\\Documents\\NBA-2023-Season")
+ 2.   └─rsconnect:::deploymentTarget(...)
+ 3.     └─rsconnect:::disambiguateDeployments(appDeployments, error_call = error_call)
+ 4.       └─rsconnect:::cli_menu(...)
+ 5.         └─cli::cli_abort(c(header, not_interactive), .envir = .envir, call = error_call)
+ 6.           └─rlang::abort(...)
+Exécution arrêtée
+[Deployment Start Time: 2023-11-25 21:20:53] 
+── Preparing for deployment ────────────────────────────────────────────────────
+Error in `rsconnect::deployApp()`:
+! This directory has been previously deployed in multiple places.
+Please use `appName`, `server` or `account` to disambiguate.
+Known applications:
+• nba_stats (server: shinyapps.io / username: 78luxg-jean0luc-yao):
+  <https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/>
+• nba_stats (server: shinyapps.io / username: 78luxg-jean0luc-yao):
+  <https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/>
+Backtrace:
+    ▆
+ 1. └─rsconnect::deployApp(appName = "nba_stats", appDir = "C:\\Users\\DELL\\Documents\\NBA-2023-Season")
+ 2.   └─rsconnect:::deploymentTarget(...)
+ 3.     └─rsconnect:::disambiguateDeployments(appDeployments, error_call = error_call)
+ 4.       └─rsconnect:::cli_menu(...)
+ 5.         └─cli::cli_abort(c(header, not_interactive), .envir = .envir, call = error_call)
+ 6.           └─rlang::abort(...)
+Exécution arrêtée
+[Deployment End Time: 2023-11-25 21:20:53] 
+ 
