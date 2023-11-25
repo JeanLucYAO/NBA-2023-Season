@@ -4,65 +4,33 @@ runtime: shiny
 output:
   flexdashboard::flex_dashboard:
     theme: 
-      version: 5
+      version: 4
       bootswatch: default
     orientation: rows
     vertical_layout: scroll
 ---
 
 ```{r setup, include=FALSE}
-# knitr::opts_chunk$set(echo = TRUE)
-
 # Packages
 library(dplyr)
 library(readr)
 library(flexdashboard)
 library(ggplot2)
 
-# Load datasets
-season_19_20 <- read_csv("Data/2019-20.csv")
-
-# Helpers
-donut <- function(pct) {
-  # Create data.
-  data <- data.frame(
-    category = c("A", "B"),
-    count = c(pct, 1 - pct)
-  )
-  
-  # Compute the cumulative percentages (top of each rectangle)
-  data$ymax = cumsum(data$count)
-  
-  # Compute the bottom of each rectangle
-  data$ymin = c(0, head(data$ymax, n = -1))
-  
-  # Compute label position
-  data$labelPosition <- (data$ymax + data$ymin) / 2
-  
-  # Compute a good label
-  data$label <- c(paste0(100 * pct, "%"), "")
-  
-  # plot
-  ggplot(data, aes(ymax = ymax, ymin = ymin, xmax = 4, xmin = 3, fill = category)) +
-    scale_fill_manual(values=c("#5296fb", "#d7dde5")) +
-    geom_rect() +
-    geom_label(x = 3.5, aes(y = labelPosition, label = label), label.size = NA, size = 4) +
-    coord_polar(theta = "y") +
-    xlim(c(2, 4)) +
-    theme_void() +
-    theme(legend.position = "none")
-}
+# Load data
+season_23_24 <- read_csv("Data/2023-24.csv")
 ```
+
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 ```{r}
 selectInput("players",
             "PLAYERS",
-            choices = unique(season_19_20$PLAYER_NAME))
+            choices = unique(season_23_24$PLAYER_NAME))
 
 current <- reactive({
-  season_19_20 %>% filter(PLAYER_NAME == input$players)
+  season_23_24 %>% filter(PLAYER_NAME == input$players)
 })
 ```
 
