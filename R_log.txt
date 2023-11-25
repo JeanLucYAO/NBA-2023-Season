@@ -1,0 +1,51 @@
+
+R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R est un logiciel libre livré sans AUCUNE GARANTIE.
+Vous pouvez le redistribuer sous certaines conditions.
+Tapez 'license()' ou 'licence()' pour plus de détails.
+
+R est un projet collaboratif avec de nombreux contributeurs.
+Tapez 'contributors()' pour plus d'information et
+'citation()' pour la façon de le citer dans les publications.
+
+Tapez 'demo()' pour des démonstrations, 'help()' pour l'aide
+en ligne ou 'help.start()' pour obtenir l'aide au format HTML.
+Tapez 'q()' pour quitter R.
+
+> rmarkdown::render('C:\\Users\\DELL\\Documents\\NBA-2023-Season\\nba.Rmd')
+
+
+processing file: nba.Rmd
+1/23                   
+2/23 [setup]           
+3/23                   
+4/23 [unnamed-chunk-1] 
+5/23                   
+6/23 [unnamed-chunk-2] 
+7/23                   
+8/23 [unnamed-chunk-3] 
+9/23                   
+10/23 [unnamed-chunk-4] 
+11/23                   
+12/23 [unnamed-chunk-5] 
+13/23                   
+14/23 [unnamed-chunk-6] 
+15/23                   
+16/23 [unnamed-chunk-7] 
+17/23                   
+18/23 [unnamed-chunk-8] 
+19/23                   
+20/23 [unnamed-chunk-9] 
+21/23                   
+22/23 [unnamed-chunk-10]
+23/23                   
+output file: nba.knit.md
+
+"C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc" +RTS -K512m -RTS nba.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output nba.html --lua-filter "C:\Users\DELL\AppData\Local\R\win-library\4.3\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\DELL\AppData\Local\R\win-library\4.3\rmarkdown\rmarkdown\lua\latex-div.lua" --embed-resources --standalone --variable bs3=FALSE --standalone --section-divs --template "C:\Users\DELL\AppData\Local\R\win-library\4.3\flexdashboard\www\flex_dashboard\default.html" --id-prefix section- --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\DELL\AppData\Local\Temp\RtmpQLy5YF\rmarkdown-str3eb84e695b5c.html" --highlight-style pygments --include-in-header "C:\Users\DELL\AppData\Local\Temp\RtmpQLy5YF\file3eb82d8424f6html" --include-before-body "C:\Users\DELL\AppData\Local\Temp\RtmpQLy5YF\file3eb82a0e78ef.html" --include-after-body "C:\Users\DELL\AppData\Local\Temp\RtmpQLy5YF\file3eb85084210a.html" 
+
+Output created: nba.html
+> 
+> 
