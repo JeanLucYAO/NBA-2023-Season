@@ -9,6 +9,10 @@ cd /d "%USERPROFILE%\Documents\NBA-2023-Season"
 REM Add all changes to git
 git add .
 
+REM Remove some files
+git rm --cached credentials.txt
+git rm --cached -r rsconnect
+
 REM Commit the changes
 git commit -m "Automated commit for data document update"
 

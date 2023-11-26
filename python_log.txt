@@ -1,12 +1,16 @@
-
-
-2020-21 done.
-
-
-2021-22 done.
-
-
-2022-23 done.
-
-
-2023-24 done.
+Traceback (most recent call last):
+  File "C:\Users\DELL\Documents\NBA-2023-Season\script.py", line 53, in <module>
+    data.to_csv(name)
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\generic.py", line 3902, in to_csv
+    return DataFrameRenderer(formatter).to_csv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\format.py", line 1152, in to_csv
+    csv_formatter.save()
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\csvs.py", line 247, in save
+    with get_handle(
+         ^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\common.py", line 739, in get_handle
+    check_parent_directory(str(handle))
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\common.py", line 604, in check_parent_directory
+    raise OSError(rf"Cannot save file into a non-existent directory: '{parent}'")
+OSError: Cannot save file into a non-existent directory: 'Data'
