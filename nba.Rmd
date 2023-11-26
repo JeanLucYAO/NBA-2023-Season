@@ -1,5 +1,5 @@
 ---
-title: "NBA Statistics"
+title: "NBA Statistics | 2023-2024"
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
@@ -15,8 +15,10 @@ output:
 library(dplyr)
 library(readr)
 library(shiny)
+library(shinytitle)
 library(flexdashboard)
 library(ggplot2)
+library(forcats)
 
 # Load data
 season_23_24 <- read_csv("Data/2023-24.csv")
@@ -26,13 +28,64 @@ season_23_24 <- read_csv("Data/2023-24.csv")
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 ```{r}
+selectInput("teams",
+            "Select a Team",
+            choices = sort(unique(season_23_24$TEAM_ABBREVIATION)),
+            selected = "ATL")
+
 selectInput("players",
-            "PLAYERS",
-            choices = unique(season_23_24$PLAYER_NAME))
+            "Select a Player",
+            choices = NULL)
+
+# Observe selection on Team input
+observe({
+  team_selected <- input$teams
+    
+  # Check if team_selected is NULL or empty, return early if it is
+  if (is.null(team_selected) || team_selected == "") {
+    return()
+  }
+  
+  players_list <- season_23_24 %>% 
+    filter(TEAM_ABBREVIATION == team_selected) %>% 
+    select(PLAYER_NAME)
+  
+  players_list <-  sort(unique(players_list$PLAYER_NAME))
+  
+  # Update the Players based on the team selected,
+  # setting the choices to the relevant subset from the players list
+  updateSelectInput(session, 
+                    "players",
+                    label = "Select a Player",
+                    choices = players_list,
+                    selected = players_list[1])
+})
+
+roster <- reactive({
+  season_23_24 %>% filter(TEAM_ABBREVIATION == input$teams)
+})
 
 current <- reactive({
   season_23_24 %>% filter(PLAYER_NAME == input$players)
 })
+
+create_stat_plot <- function(stat) {
+  df <- reactive({
+    roster() %>% 
+      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, "Selected", "Not Selected"),
+             stats = .data[[stat]]) %>%
+      arrange(desc(stats)) %>% 
+      mutate(PLAYER_NAME=factor(PLAYER_NAME, levels=PLAYER_NAME))
+  })
+  
+  
+  ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
+    geom_bar(stat="identity", alpha=.6, width=.4, show.legend = FALSE) +
+    scale_fill_manual(values = c("Selected" = "gold", "Not Selected" = "#0d6efd")) +
+    coord_flip() +
+    xlab("") +
+    theme_minimal() 
+}
 ```
 
 
@@ -73,6 +126,32 @@ renderValueBox({
     value = current()$MIN,
     caption = "Minutes Per Game",
     icon = "fa-clock",
+    color = "primary"
+  )
+})
+```
+
+
+### Games Played
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$GP,
+    caption = "Games Played",
+    icon = "fa-calendar-check",
+    color = "primary"
+  )
+})
+```
+
+
+### Points per Game 
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$PTS,
+    caption = "Points Per Game",
+    icon = "fa-basketball",
     color = "primary"
   )
 })
@@ -127,19 +206,6 @@ renderGauge({
 Row
 -----------------------------------------------------------------------
 
-### Points per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$PTS,
-    caption = "Points Per Game",
-    icon = "fa-basketball",
-    color = "primary"
-  )
-})
-```
-
-
 ### Assists per Game 
 ```{r}
 renderValueBox({
@@ -166,4 +232,67 @@ renderValueBox({
 ```
 
 
+### Blocks per Game
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$BLK,
+    caption = "Blocks Per Game",
+    icon = "fa-hand-point-up",
+    color = "primary"
+  )
+})
+```
+
+
+### Steals per Game
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$STL,
+    caption = "Steals Per Game",
+    icon = "fa-people-robbery",
+    color = "primary"
+  )
+})
+```
+
+
+### Turnovers per Game
+```{r}
+renderValueBox({
+  valueBox(
+    value = current()$TOV,
+    caption = "Turnovers Per Game",
+    icon = "fa-person-walking-arrow-loop-left",
+    color = "primary"
+  )
+})
+```
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Points Distribution
+```{r}
+renderPlot({
+  create_stat_plot("PTS")
+})
+```
+
+
+### Assists Distribution
+```{r}
+renderPlot({
+  create_stat_plot("AST")
+})
+```
+
+
+### Rebounds Distribution
+```{r}
+renderPlot({
+  create_stat_plot("REB")
+})
+```
 
