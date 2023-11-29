@@ -14,3 +14,7 @@ Traceback (most recent call last):
   File "C:\Users\DELL\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\common.py", line 604, in check_parent_directory
     raise OSError(rf"Cannot save file into a non-existent directory: '{parent}'")
 OSError: Cannot save file into a non-existent directory: 'Data'
+[Start Time: 2023-11-29 23:47:09] 
+
+
+2023-24 done.
