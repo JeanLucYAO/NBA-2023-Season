@@ -1,13 +1,15 @@
 ---
-title: "NBA Statistics | 2023-2024"
+title: "STATISTICS 2023-2024"
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
     theme: 
       version: 4
+      primary: "#77253D"
       bootswatch: default
     orientation: rows
     vertical_layout: scroll
+    logo: www/logo-nba.svg
 ---
 
 ```{r setup, include=FALSE}
@@ -15,10 +17,9 @@ output:
 library(dplyr)
 library(readr)
 library(shiny)
-library(shinytitle)
+library(htmltools)
 library(flexdashboard)
 library(ggplot2)
-library(forcats)
 
 # Load data
 season_23_24 <- read_csv("Data/2023-24.csv")
@@ -29,13 +30,16 @@ Sidebar {.sidebar}
 -----------------------------------------------------------------------
 ```{r}
 selectInput("teams",
-            "Select a Team",
+            "SELECT A TEAM",
             choices = sort(unique(season_23_24$TEAM_ABBREVIATION)),
             selected = "ATL")
 
 selectInput("players",
-            "Select a Player",
+            "SELECT A PLAYER",
             choices = NULL)
+
+# Placeholder for dynamic image output
+# uiOutput("team_logo")
 
 # Observe selection on Team input
 observe({
@@ -56,7 +60,7 @@ observe({
   # setting the choices to the relevant subset from the players list
   updateSelectInput(session, 
                     "players",
-                    label = "Select a Player",
+                    label = "SELECT A PLAYER",
                     choices = players_list,
                     selected = players_list[1])
 })
@@ -69,6 +73,20 @@ current <- reactive({
   season_23_24 %>% filter(PLAYER_NAME == input$players)
 })
 
+
+# output$team_logo <- renderUI({
+#   # Obtain the selected team name
+#   selected_team <- tolower(input$teams)
+# 
+#   # If a team is selected, show its logo
+#   if (!is.null(selected_team)) {
+#     img_src <- paste0("www/logo-",
+#                       selected_team, ".svg")
+#     print(img_src)
+#     tags$img(src = img_src, height = "auto", width = "auto")
+#   }
+# })
+
 create_stat_plot <- function(stat) {
   df <- reactive({
     roster() %>% 
@@ -80,8 +98,8 @@ create_stat_plot <- function(stat) {
   
   
   ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
-    geom_bar(stat="identity", alpha=.6, width=.4, show.legend = FALSE) +
-    scale_fill_manual(values = c("Selected" = "gold", "Not Selected" = "#0d6efd")) +
+    geom_bar(stat="identity", alpha=.6, width=.5, show.legend = FALSE) +
+    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() +
     xlab("") +
     theme_minimal() 
@@ -100,7 +118,7 @@ renderValueBox({
     value = current()$TEAM_ABBREVIATION,
     caption = "Team",
     icon = "fa-shirt",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -113,7 +131,7 @@ renderValueBox({
     value = current()$AGE,
     caption = "Years old",
     icon = "fa-calendar",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -126,7 +144,7 @@ renderValueBox({
     value = current()$MIN,
     caption = "Minutes Per Game",
     icon = "fa-clock",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -139,7 +157,7 @@ renderValueBox({
     value = current()$GP,
     caption = "Games Played",
     icon = "fa-calendar-check",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -152,7 +170,7 @@ renderValueBox({
     value = current()$PTS,
     caption = "Points Per Game",
     icon = "fa-basketball",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -169,7 +187,7 @@ renderGauge({
       max = 100,
       symbol = '%', 
       gaugeSectors(success = c(40, 100), warning = c(20, 40), danger = c(0, 20),
-                   colors = c("primary", "secondary", "danger"))
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
   )
 })
 ```
@@ -182,8 +200,8 @@ renderGauge({
       min = 0,
       max = 100,
       symbol = '%', 
-      gaugeSectors(success = c(74, 100), warning = c(60, 74), danger = c(0, 60),
-                   colors = c("primary", "secondary", "danger"))
+      gaugeSectors(success = c(75, 100), warning = c(60, 75), danger = c(0, 60),
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
   )
 })
 ```
@@ -196,8 +214,8 @@ renderGauge({
       min = 0,
       max = 100,
       symbol = '%', 
-      gaugeSectors(success = c(30, 100), warning = c(20, 30), danger = c(0, 20),
-                   colors = c("primary", "secondary", "danger"))
+      gaugeSectors(success = c(35, 100), warning = c(20, 35), danger = c(0, 20),
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
   )
 })
 ```
@@ -213,7 +231,7 @@ renderValueBox({
     value = current()$AST,
     caption = "Assists Per Game",
     icon = "fa-handshake-angle",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -226,7 +244,7 @@ renderValueBox({
     value = current()$REB,
     caption = "Rebounds Per Game",
     icon = "fa-hands-holding-circle",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -239,7 +257,7 @@ renderValueBox({
     value = current()$BLK,
     caption = "Blocks Per Game",
     icon = "fa-hand-point-up",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -252,7 +270,7 @@ renderValueBox({
     value = current()$STL,
     caption = "Steals Per Game",
     icon = "fa-people-robbery",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -265,7 +283,7 @@ renderValueBox({
     value = current()$TOV,
     caption = "Turnovers Per Game",
     icon = "fa-person-walking-arrow-loop-left",
-    color = "primary"
+    color = "#1d428a"
   )
 })
 ```
@@ -273,7 +291,7 @@ renderValueBox({
 Row {.tabset}
 -----------------------------------------------------------------------
 
-### Points Distribution
+### Points Comparison
 ```{r}
 renderPlot({
   create_stat_plot("PTS")
@@ -281,7 +299,7 @@ renderPlot({
 ```
 
 
-### Assists Distribution
+### Assists Comparison
 ```{r}
 renderPlot({
   create_stat_plot("AST")
@@ -289,7 +307,7 @@ renderPlot({
 ```
 
 
-### Rebounds Distribution
+### Rebounds Comparison
 ```{r}
 renderPlot({
   create_stat_plot("REB")

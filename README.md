@@ -8,6 +8,8 @@ It's always good to know what is going on in the NBA once in a while. So I built
 - [The deploy Bash script](deploy.bat) automatically update the shiny app [here](https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/)
 
 ## Changes to come
-- [ ] Remove loaded libraries that are unused
-- [ ] Add icon
+- [x] Remove loaded libraries that are unused
+- [ ] Add NBA logo to the header of the app
 - [ ] Add player pictures and/or team picture
+- [ ] Fix `aes_string()` was deprecated in ggplot2 3.0.0`
+- [ ] Add Verbose in sidebar to tell whether the player is a starter based on stats
