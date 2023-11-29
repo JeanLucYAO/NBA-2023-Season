@@ -1,6 +1,6 @@
 @echo off
 
-EM Set the path to the log file.
+REM Set the path to the log file.
 set LOGFILE=python_log.txt
 
 REM Get the current date and time to timestamp the log entry
