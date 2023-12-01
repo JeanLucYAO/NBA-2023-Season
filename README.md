@@ -9,7 +9,7 @@ It's always good to know what is going on in the NBA once in a while. So I built
 
 ## Changes to come
 - [x] Remove loaded libraries that are unused
-- [ ] Add NBA logo to the header of the app
+- [x] Add NBA logo to the header of the app
 - [ ] Add player pictures and/or team picture
 - [ ] Fix `aes_string()` was deprecated in ggplot2 3.0.0`
 - [ ] Add Verbose in sidebar to tell whether the player is a starter based on stats
