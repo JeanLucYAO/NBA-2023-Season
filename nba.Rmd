@@ -322,70 +322,73 @@ OFFENSE
 Row
 -----------------------------------------------------------------------
 
-### Minutes per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$MIN,
-    caption = "Minutes Per Game",
-    icon = "fa-clock",
-    color = "#1d428a"
-  )
-})
-```
+<!-- ### Minutes per Game  -->
+<!-- ```{r} -->
+<!-- renderValueBox({ -->
+<!--   valueBox( -->
+<!--     value = current()$MIN, -->
+<!--     caption = "Minutes Per Game", -->
+<!--     icon = "fa-clock", -->
+<!--     color = "#1d428a" -->
+<!--   ) -->
+<!-- }) -->
+<!-- ``` -->
 
 
-### Points per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$PTS,
-    caption = "Points Per Game",
-    icon = "fa-basketball",
-    color = "#1d428a"
-  )
-})
-```
+<!-- ### Points per Game  -->
+<!-- ```{r} -->
+<!-- renderValueBox({ -->
+<!--   valueBox( -->
+<!--     value = current()$PTS, -->
+<!--     caption = "Points Per Game", -->
+<!--     icon = "fa-basketball", -->
+<!--     color = "#1d428a" -->
+<!--   ) -->
+<!-- }) -->
+<!-- ``` -->
 
 
-### Field Goal Attempted per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$FGA,
-    caption = "FG Attempted Per Game",
-    icon = "fa-dribbble",
-    color = "#1d428a"
-  )
-})
-```
+<!-- ### Field Goal Attempted per Game  -->
+<!-- ```{r} -->
+<!-- renderValueBox({ -->
+<!--   valueBox( -->
+<!--     value = current()$FGA, -->
+<!--     caption = "FG Attempted Per Game", -->
+<!--     icon = "fa-dribbble", -->
+<!--     color = "#1d428a" -->
+<!--   ) -->
+<!-- }) -->
+<!-- ``` -->
 
 
-### 3 Points Attempted per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$FG3A,
-    caption = "3 Pts Attempted Per Game",
-    icon = "fa-hands-asl-interpreting",
-    color = "#1d428a"
-  )
-})
-```
+<!-- ### 3 Points Attempted per Game  -->
+<!-- ```{r} -->
+<!-- renderValueBox({ -->
+<!--   valueBox( -->
+<!--     value = current()$FG3A, -->
+<!--     caption = "3 Pts Attempted Per Game", -->
+<!--     icon = "fa-hands-asl-interpreting", -->
+<!--     color = "#1d428a" -->
+<!--   ) -->
+<!-- }) -->
+<!-- ``` -->
 
 
-### Free Throws Attempted per Game 
-```{r}
-renderValueBox({
-  valueBox(
-    value = current()$FTA,
-    caption = "FT Attempted Per Game",
-    icon = "fa-ring",
-    color = "#1d428a"
-  )
-})
-```
+<!-- ### Free Throws Attempted per Game  -->
+<!-- ```{r} -->
+<!-- renderValueBox({ -->
+<!--   valueBox( -->
+<!--     value = current()$FTA, -->
+<!--     caption = "FT Attempted Per Game", -->
+<!--     icon = "fa-ring", -->
+<!--     color = "#1d428a" -->
+<!--   ) -->
+<!-- }) -->
+<!-- ``` -->
 
 
 DEFENSE
 =======================================================================
+
+Row
+-----------------------------------------------------------------------
