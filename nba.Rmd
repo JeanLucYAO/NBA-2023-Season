@@ -20,6 +20,8 @@ library(shiny)
 library(htmltools)
 library(flexdashboard)
 library(ggplot2)
+library(gt)
+library(DT)
 
 # Load data
 season_23_24 <- read_csv("Data/2023-24.csv")
@@ -316,8 +318,10 @@ renderPlot({
 ```
 
 
-OFFENSE
+OFFENSE {data-navmenu="Under Development"}
 =======================================================================
+
+This tab is currently under development. Stay tuned!
 
 Row
 -----------------------------------------------------------------------
@@ -387,8 +391,82 @@ Row
 <!-- ``` -->
 
 
-DEFENSE
+DEFENSE {data-navmenu="Under Development"}
 =======================================================================
+
+This tab is currently under development. Stay tuned!
 
 Row
 -----------------------------------------------------------------------
+
+
+TEAM ABBREVIATION
+=======================================================================
+
+Row {data-height=550}
+-----------------------------------------------------------------------
+
+### TABLE 1
+```{r}
+rosters <- season_23_24 %>% 
+  select(TEAM_ABBREVIATION) %>% 
+  unique() %>% 
+  arrange(TEAM_ABBREVIATION) %>% 
+  mutate(FULL_NAME = case_when(
+    TEAM_ABBREVIATION == "ATL" ~ "ATLANTA HAWKS",
+    TEAM_ABBREVIATION == "BKN" ~ "BROOKLYN NETS",
+    TEAM_ABBREVIATION == "BOS" ~ "BOSTON CELTICS",
+    TEAM_ABBREVIATION == "CHA" ~ "CHARLOTTE HORNETS",
+    TEAM_ABBREVIATION == "CHI" ~ "CHICAGO BULLS",
+    TEAM_ABBREVIATION == "CLE" ~ "CLEVELAND CAVALIERS",
+    TEAM_ABBREVIATION == "DAL" ~ "DALLAS MAVERICKS",
+    TEAM_ABBREVIATION == "DEN" ~ "DENVER NUGGETS",
+    TEAM_ABBREVIATION == "DET" ~ "DETROIT PISTONS",
+    TEAM_ABBREVIATION == "GSW" ~ "GOLDEN STATE WARRIORS",
+    TEAM_ABBREVIATION == "HOU" ~ "HOUSTON ROCKETS",
+    TEAM_ABBREVIATION == "IND" ~ "INDIANA PACERS",
+    TEAM_ABBREVIATION == "LAC" ~ "LOS ANGELES CLIPPERS",
+    TEAM_ABBREVIATION == "LAL" ~ "LOS ANGELES LAKERS",
+    TEAM_ABBREVIATION == "MEM" ~ "MEMPHIS GRIZZLIES",
+    TEAM_ABBREVIATION == "MIA" ~ "MIAMI HEAT",
+    TEAM_ABBREVIATION == "MIL" ~ "MILWAUKEE BUCKS",
+    TEAM_ABBREVIATION == "MIN" ~ "MINNESOTA TIMBERWOLVES",
+    TEAM_ABBREVIATION == "NOP" ~ "NEW ORLEANS PELICANS",
+    TEAM_ABBREVIATION == "NYK" ~ "NEW YORK KNICKS",
+    TEAM_ABBREVIATION == "OKC" ~ "OKLAHOMA CITY THUNDER",
+    TEAM_ABBREVIATION == "ORL" ~ "ORLANDO MAGIC",
+    TEAM_ABBREVIATION == "PHI" ~ "PHILADELPHIA SEVENTY SIXERS",
+    TEAM_ABBREVIATION == "PHX" ~ "PHOENIX SUNS",
+    TEAM_ABBREVIATION == "POR" ~ "PORTLAND TRAIL BLAZZERS",
+    TEAM_ABBREVIATION == "SAC" ~ "SACRAMENTO KINGS",
+    TEAM_ABBREVIATION == "SAS" ~ "SAN ANTONIO SPURS",
+    TEAM_ABBREVIATION == "TOR" ~ "TORONTO RAPTORS",
+    TEAM_ABBREVIATION == "UTA" ~ "UTAH JAZZ",
+    TEAM_ABBREVIATION == "WAS" ~ "WASHINGTON WIZZARDS"
+  ))
+
+render_gt({
+  rosters %>% 
+    gt() %>% 
+    tab_header(title = md(paste0(fontawesome::fa("basketball"), 
+                                 "   **NBA FRANCHISES LOVE THEM OR HATE THEM**   ",
+                                 fontawesome::fa("basketball"))),
+               # subtitle = md("*Low them or hate them*")
+               ) %>% 
+    cols_align(align = "right",
+               columns = FULL_NAME) %>% 
+    cols_label(TEAM_ABBREVIATION = md("**Team Abbreviation**"),
+               FULL_NAME = md("**Team Full Name**")) %>% 
+    opt_interactive(use_compact_mode = T)
+})
+```
+
+
+<!-- ### TABLE 2 -->
+<!-- ```{r} -->
+<!-- renderDT({ -->
+<!--   rosters %>% -->
+<!--     datatable() -->
+<!-- }) -->
+<!-- ``` -->
+
