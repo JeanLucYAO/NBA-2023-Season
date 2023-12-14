@@ -10,6 +10,8 @@ It's always good to know what is going on in the NBA once in a while. So I built
 ## Changes to come
 - [x] Remove loaded libraries that are unused
 - [x] Add NBA logo to the header of the app
-- [ ] Add player pictures and/or team picture
-- [ ] Fix `aes_string()` was deprecated in ggplot2 3.0.0`
+- [x] Add player pictures and/or team picture
+- [x] Fix `aes_string() was deprecated in ggplot2 3.0.0`
+- [ ] Update the Ranking bar graph with playoff, play-in and out
 - [ ] Add Verbose in sidebar to tell whether the player is a starter based on stats
+- [ ] Fix [deploy Bash script](deploy.bat), it's not working well
