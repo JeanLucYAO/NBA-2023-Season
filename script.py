@@ -70,13 +70,13 @@ for season in season_list :
     url = h + i + j + k + l + season + m
 
     ## Get data as a json file
-    response = requests.get(url=url, headers=team_head)
+    response = requests.get(url=url, headers=headers)
     response.raise_for_status()
     data = response.json()['resultSets'][0]['rowSet']
 
     ## Transform data as a pandas dataframe
     data = pd.DataFrame(data)
-    data.columns = heads
+    data.columns = team_head
 
     ## Save as csv file
     name = 'Data/Teams_'+season+'.csv'
