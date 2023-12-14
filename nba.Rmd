@@ -3,13 +3,44 @@ title: "STATISTICS 2023-2024"
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
-    theme: 
+    theme:
       version: 4
-      primary: "#77253D"
+      primary: '#77253D'
       bootswatch: default
     orientation: rows
     vertical_layout: scroll
-    logo: www/logo-nba.svg
+    logo: "www/logo-nba.png"
+resource_files:
+- "www/logo-atl.png"
+- "www/logo-bos.png"
+- "www/logo-bkn.png"
+- "www/logo-cha.png"
+- "www/logo-chi.png"
+- "www/logo-cle.png"
+- "www/logo-dal.png"
+- "www/logo-den.png"
+- "www/logo-det.png"
+- "www/logo-gsw.png"
+- "www/logo-hou.png"
+- "www/logo-ind.png"
+- "www/logo-lac.png"
+- "www/logo-lal.png"
+- "www/logo-mem.png"
+- "www/logo-mia.png"
+- "www/logo-mil.png"
+- "www/logo-min.png"
+- "www/logo-nop.png"
+- "www/logo-nyk.png"
+- "www/logo-okc.png"
+- "www/logo-orl.png"
+- "www/logo-phi.png"
+- "www/logo-phx.png"
+- "www/logo-por.png"
+- "www/logo-sac.png"
+- "www/logo-sas.png"
+- "www/logo-tor.png"
+- "www/logo-uta.png"
+- "www/logo-was.png"
 ---
 
 ```{r setup, include=FALSE}
