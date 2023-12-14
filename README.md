@@ -9,10 +9,10 @@ It's always good to know what is going on in the NBA once in a while. So I built
 - [This Batch file](deploy.bat) automatically deploys the shiny app [here](https://78luxg-jean0luc-yao.shinyapps.io/nba_stats/)
 
 ## Changes to come
-- [x] Remove loaded libraries that are unused
+- [x] Remove libraries that are unused
 - [x] Add NBA logo to the header of the app
-- [x] Add player pictures and/or team picture
+- [x] Add player picture and/or team picture
 - [x] Fix `aes_string() was deprecated in ggplot2 3.0.0`
 - [ ] Update the Ranking bar graph with playoff, play-in and out
 - [ ] Add Verbose in sidebar to tell whether the player is a starter based on stats
-- [ ] Fix [deploy Bash script](deploy.bat), it's not working well
+- [ ] Fix [deploy Batch file](deploy.bat), it's not working well
