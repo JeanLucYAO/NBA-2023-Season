@@ -17,14 +17,14 @@ output:
 library(dplyr)
 library(readr)
 library(shiny)
-library(htmltools)
 library(flexdashboard)
 library(ggplot2)
-library(gt)
-library(DT)
+library(htmltools)
 
 # Load data
-season_23_24 <- read_csv("Data/2023-24.csv")
+players <- read_csv("Clean/Players_2023-24.csv")
+east <- read_csv("Clean/East_2023-24.csv")
+west <- read_csv("Clean/West_2023-24.csv")
 ```
 
 
@@ -33,15 +33,12 @@ Sidebar {.sidebar}
 ```{r}
 selectInput("teams",
             "SELECT A TEAM",
-            choices = sort(unique(season_23_24$TEAM_ABBREVIATION)),
+            choices = sort(unique(players$TEAM_NAME)),
             selected = "ATL")
 
 selectInput("players",
             "SELECT A PLAYER",
             choices = NULL)
-
-# Placeholder for dynamic image output
-# uiOutput("team_logo")
 
 # Observe selection on Team input
 observe({
@@ -52,8 +49,8 @@ observe({
     return()
   }
   
-  players_list <- season_23_24 %>% 
-    filter(TEAM_ABBREVIATION == team_selected) %>% 
+  players_list <- players %>% 
+    filter(TEAM_NAME == team_selected) %>% 
     select(PLAYER_NAME)
   
   players_list <-  sort(unique(players_list$PLAYER_NAME))
@@ -68,25 +65,23 @@ observe({
 })
 
 roster <- reactive({
-  season_23_24 %>% filter(TEAM_ABBREVIATION == input$teams)
+  players %>% filter(TEAM_NAME == input$teams)
 })
 
 current <- reactive({
-  season_23_24 %>% filter(PLAYER_NAME == input$players)
+  players %>% filter(PLAYER_NAME == input$players)
 })
 
 
-# output$team_logo <- renderUI({
-#   # Obtain the selected team name
-#   selected_team <- tolower(input$teams)
-# 
-#   # If a team is selected, show its logo
-#   if (!is.null(selected_team)) {
-#     img_src <- paste0("www/logo-", selected_team, ".svg")
-#     print(img_src)
-#     tags$img(src = img_src, height = "auto", width = "auto")
-#   }
-# })
+renderImage({
+  # Obtain the selected team name
+  selected_team <- tolower(unique(roster()$TEAM_ABBREVIATION))
+  
+  list(src = paste0("www/logo-", selected_team, ".png"),
+       contentType = "image/png",
+       width = "auto",
+       height = "auto")
+  }, deleteFile = F)
 
 create_stat_plot <- function(stat) {
   df <- reactive({
@@ -95,35 +90,53 @@ create_stat_plot <- function(stat) {
                                       "Selected", "Not Selected"),
              stats = .data[[stat]]) %>%
       arrange(desc(stats)) %>% 
-      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = PLAYER_NAME))
+      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = rev(unique(PLAYER_NAME))))
   })
   
   
-  ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
+  ggplot(df(), aes(x = PLAYER_NAME, y = stats, fill = PlayerSelected)) +
     geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
     scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() +
-    xlab("") +
+    labs(x = NULL, y = NULL) +
     theme_minimal() 
 }
 
 create_top_10 <- function(stat) {
   df <- reactive({
-    season_23_24 %>% 
+    players %>% 
       mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
                                       "Selected", "Not Selected"),
-             stats = .data[[stat]]) %>%
+             stats = .data[[stat]]
+             ) %>%
       arrange(desc(stats)) %>% 
-      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = PLAYER_NAME)) %>% 
+      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = rev(unique(PLAYER_NAME)))) %>% 
       slice_head(n = 10)
   })
   
   
-  ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
+  ggplot(df(), aes(x = PLAYER_NAME, y = stats, fill = PlayerSelected)) +
     geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
     scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() +
-    xlab("") +
+    labs(x = NULL, y = NULL) +
+    theme_minimal() 
+}
+
+create_ranking <- function(conf) { 
+  df <- reactive({
+    conf %>% 
+      mutate(TeamSelected = if_else(TEAM_NAME == input$teams,
+                                    "Selected", "Not Selected")) %>%
+      arrange(W_PCT) %>% 
+      mutate(TEAM_NAME = factor(TEAM_NAME, levels = TEAM_NAME))
+  })
+  
+  ggplot(df(), aes(x = TEAM_NAME, y = W_PCT, fill = TeamSelected)) +
+    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
+    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+    coord_flip() +
+    labs(x = NULL, y = "Win Percentage") +
     theme_minimal() 
 }
 ```
@@ -475,76 +488,19 @@ renderPlot({
 
 Row
 -----------------------------------------------------------------------
+
 ### Western Ranking
-### Eastern Ranking
-
-TEAM ABBREVIATION
-=======================================================================
-
-Row {data-height=550}
------------------------------------------------------------------------
-
-### FRANCHISES
 ```{r}
-rosters <- season_23_24 %>% 
-  select(TEAM_ABBREVIATION) %>% 
-  unique() %>% 
-  arrange(TEAM_ABBREVIATION) %>% 
-  mutate(FULL_NAME = case_when(
-    TEAM_ABBREVIATION == "ATL" ~ "ATLANTA HAWKS",
-    TEAM_ABBREVIATION == "BKN" ~ "BROOKLYN NETS",
-    TEAM_ABBREVIATION == "BOS" ~ "BOSTON CELTICS",
-    TEAM_ABBREVIATION == "CHA" ~ "CHARLOTTE HORNETS",
-    TEAM_ABBREVIATION == "CHI" ~ "CHICAGO BULLS",
-    TEAM_ABBREVIATION == "CLE" ~ "CLEVELAND CAVALIERS",
-    TEAM_ABBREVIATION == "DAL" ~ "DALLAS MAVERICKS",
-    TEAM_ABBREVIATION == "DEN" ~ "DENVER NUGGETS",
-    TEAM_ABBREVIATION == "DET" ~ "DETROIT PISTONS",
-    TEAM_ABBREVIATION == "GSW" ~ "GOLDEN STATE WARRIORS",
-    TEAM_ABBREVIATION == "HOU" ~ "HOUSTON ROCKETS",
-    TEAM_ABBREVIATION == "IND" ~ "INDIANA PACERS",
-    TEAM_ABBREVIATION == "LAC" ~ "LOS ANGELES CLIPPERS",
-    TEAM_ABBREVIATION == "LAL" ~ "LOS ANGELES LAKERS",
-    TEAM_ABBREVIATION == "MEM" ~ "MEMPHIS GRIZZLIES",
-    TEAM_ABBREVIATION == "MIA" ~ "MIAMI HEAT",
-    TEAM_ABBREVIATION == "MIL" ~ "MILWAUKEE BUCKS",
-    TEAM_ABBREVIATION == "MIN" ~ "MINNESOTA TIMBERWOLVES",
-    TEAM_ABBREVIATION == "NOP" ~ "NEW ORLEANS PELICANS",
-    TEAM_ABBREVIATION == "NYK" ~ "NEW YORK KNICKS",
-    TEAM_ABBREVIATION == "OKC" ~ "OKLAHOMA CITY THUNDER",
-    TEAM_ABBREVIATION == "ORL" ~ "ORLANDO MAGIC",
-    TEAM_ABBREVIATION == "PHI" ~ "PHILADELPHIA SEVENTY SIXERS",
-    TEAM_ABBREVIATION == "PHX" ~ "PHOENIX SUNS",
-    TEAM_ABBREVIATION == "POR" ~ "PORTLAND TRAIL BLAZZERS",
-    TEAM_ABBREVIATION == "SAC" ~ "SACRAMENTO KINGS",
-    TEAM_ABBREVIATION == "SAS" ~ "SAN ANTONIO SPURS",
-    TEAM_ABBREVIATION == "TOR" ~ "TORONTO RAPTORS",
-    TEAM_ABBREVIATION == "UTA" ~ "UTAH JAZZ",
-    TEAM_ABBREVIATION == "WAS" ~ "WASHINGTON WIZZARDS"
-  ))
-
-render_gt({
-  rosters %>% 
-    gt() %>% 
-    tab_header(title = md(paste0(fontawesome::fa("basketball"), 
-                                 "   **NBA FRANCHISES: LOVE THEM OR HATE THEM**   ",
-                                 fontawesome::fa("basketball"))),
-               # subtitle = md("*Low them or hate them*")
-               ) %>% 
-    cols_align(align = "right",
-               columns = FULL_NAME) %>% 
-    cols_label(TEAM_ABBREVIATION = md("**Team Abbreviation**"),
-               FULL_NAME = md("**Team Full Name**")) %>% 
-    opt_interactive(use_compact_mode = T)
+renderPlot({
+  create_ranking(west)
 })
 ```
 
 
-<!-- ### TABLE 2 -->
-<!-- ```{r} -->
-<!-- renderDT({ -->
-<!--   rosters %>% -->
-<!--     datatable() -->
-<!-- }) -->
-<!-- ``` -->
+### Eastern Ranking
+```{r}
+renderPlot({
+  create_ranking(east)
+})
+```
 

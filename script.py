@@ -20,6 +20,7 @@ headers  = {
 }
 ## Seasons available 
 season_list = ['2023-24']
+conference = ['East', 'West']
 
 ## Headers of players' dataframe
 heads = ["PLAYER_ID", "PLAYER_NAME", "NICKNAME", "TEAM_ID", "TEAM_ABBREVIATION", "AGE", "GP", "W", "L","W_PCT","MIN","FGM","FGA","FG_PCT","FG3M","FG3A","FG3_PCT","FTM","FTA","FT_PCT","OREB","DREB","REB","AST","TOV","STL","BLK","BLKA","PF","PFD","PTS","PLUS_MINUS","NBA_FANTASY_PTS","DD2","TD3","GP_RANK","W_RANK","L_RANK","W_PCT_RANK","MIN_RANK","FGM_RANK","FGA_RANK","FG_PCT_RANK","FG3M_RANK","FG3A_RANK","FG3_PCT_RANK","FTM_RANK","FTA_RANK","FT_PCT_RANK","OREB_RANK","DREB_RANK","REB_RANK","AST_RANK","TOV_RANK","STL_RANK","BLK_RANK","BLKA_RANK","PF_RANK","PFD_RANK","PTS_RANK","PLUS_MINUS_RANK","NBA_FANTASY_PTS_RANK","DD2_RANK","TD3_RANK","CFID","CFPARAMS"]
@@ -61,26 +62,28 @@ for season in season_list :
     data.columns = heads
 
     ## Save as csv file
-    name = 'Data/Players_'+season+'.csv'
+    name = 'Data/Players_' + season + '.csv'
     data.to_csv(name)
     print("\n")
     print("Players' data " + season + " done.")
 
-    ## Build the team data url for the season
-    url = h + i + j + k + l + season + m
+    for conf in conference :
 
-    ## Get data as a json file
-    response = requests.get(url=url, headers=headers)
-    response.raise_for_status()
-    data = response.json()['resultSets'][0]['rowSet']
+        ## Build the team data url for the season
+        url = h + conf + i + j + k + l + season + m
 
-    ## Transform data as a pandas dataframe
-    data = pd.DataFrame(data)
-    data.columns = team_head
+        ## Get data as a json file
+        response = requests.get(url=url, headers=headers)
+        response.raise_for_status()
+        data = response.json()['resultSets'][0]['rowSet']
 
-    ## Save as csv file
-    name = 'Data/Teams_'+season+'.csv'
-    data.to_csv(name)
-    print("\n")
-    print("Teams' data " + season + " done.")
+        ## Transform data as a pandas dataframe
+        data = pd.DataFrame(data)
+        data.columns = team_head
+
+        ## Save as csv file
+        name = 'Data/Teams_'+ conf + '_' + season +'.csv'
+        data.to_csv(name)
+        print("\n")
+        print(conf + " Teams' data " + season + " done.")
     

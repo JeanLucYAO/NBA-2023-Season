@@ -1,0 +1,96 @@
+---
+title: "Cleaning Data for the NBA Stats Dashboard"
+author: "JL"
+date: "2023-12-14"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+### 0. Set up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+
+# Load packages as needed
+require_packages <- function(...) {
+  
+  libs_unlisted <- unlist(list(...))
+  req_packages <- unlist(lapply(libs_unlisted, require, character.only = T))
+  need_packages <- libs_unlisted[req_packages == F]
+  
+  if (length(need_packages) > 0) {
+    install.packages(need_packages)
+    lapply(need_packages, library, character.only = T)
+  }
+}
+
+# Download and load required packages
+require_packages("dplyr", "readr")
+```
+
+
+### 1. Load Data
+```{r}
+players <- read_csv("Data/Players_2023-24.csv")
+east <- read_csv("Data/Teams_East_2023-24.csv")
+west <- read_csv("Data/Teams_West_2023-24.csv")
+```
+
+
+### 2. Clean Data
+```{r}
+# Subsetting relevant stats
+clean_players <- players %>% 
+  select(PLAYER_ID, PLAYER_NAME, PLAYER_NAME, TEAM_ID, TEAM_ABBREVIATION, AGE, 
+         GP, MIN, PTS, FGA, FG_PCT, FG3A, FG3_PCT, FTA, FT_PCT,
+         OREB, DREB, REB, AST, TOV, STL, BLK, PF, PFD, PLUS_MINUS)
+
+clean_east <- east %>% 
+  select(TEAM_ID, TEAM_NAME, GP, W, L, W_PCT, 
+         PTS, FGA, FG_PCT, FG3A, FG3_PCT, FTA, FT_PCT,
+         OREB, DREB, REB, AST, TOV, STL, BLK, PF, PFD, PLUS_MINUS) %>% 
+  mutate(CONFERENCE = "East")
+
+clean_west <- west %>% 
+  select(TEAM_ID, TEAM_NAME, GP, W, L, W_PCT, 
+         PTS, FGA, FG_PCT, FG3A, FG3_PCT, FTA, FT_PCT,
+         OREB, DREB, REB, AST, TOV, STL, BLK, PF, PFD, PLUS_MINUS) %>% 
+  mutate(CONFERENCE = "West")
+
+# Add team abbreviation 
+clean_east <- clean_players %>% 
+  select(TEAM_ID, TEAM_ABBREVIATION) %>% 
+  unique() %>% 
+  right_join(clean_east)
+
+clean_west <- clean_players %>% 
+  select(TEAM_ID, TEAM_ABBREVIATION) %>% 
+  unique() %>% 
+  right_join(clean_west)
+
+clean_teams <- rbind(clean_east, clean_west)
+
+# Add team full name
+clean_players <- clean_teams %>% 
+  select(CONFERENCE, TEAM_ID, TEAM_NAME) %>% 
+  left_join(clean_players)
+```
+
+
+### 3. Save Data
+```{r}
+# Check if there are 30 franchises and write data
+if (nrow(clean_teams) == 30) {
+  write_csv(clean_east, "Clean/East_2023-24.csv")
+  write_csv(clean_west, "Clean/West_2023-24.csv")
+} else {
+  print("There are more than 30 franchises in your teams data !!!")
+}
+
+if (length(unique(clean_players$TEAM_ID)) == 30) {
+  write_csv(clean_players, "Clean/Players_2023-24.csv")
+} else {
+  print("There are more than 30 franchises in your players data !!!")
+}
+```
+
