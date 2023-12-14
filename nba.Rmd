@@ -82,8 +82,7 @@ current <- reactive({
 # 
 #   # If a team is selected, show its logo
 #   if (!is.null(selected_team)) {
-#     img_src <- paste0("www/logo-",
-#                       selected_team, ".svg")
+#     img_src <- paste0("www/logo-", selected_team, ".svg")
 #     print(img_src)
 #     tags$img(src = img_src, height = "auto", width = "auto")
 #   }
@@ -92,15 +91,36 @@ current <- reactive({
 create_stat_plot <- function(stat) {
   df <- reactive({
     roster() %>% 
-      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, "Selected", "Not Selected"),
+      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
+                                      "Selected", "Not Selected"),
              stats = .data[[stat]]) %>%
       arrange(desc(stats)) %>% 
-      mutate(PLAYER_NAME=factor(PLAYER_NAME, levels=PLAYER_NAME))
+      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = PLAYER_NAME))
   })
   
   
   ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
-    geom_bar(stat="identity", alpha=.6, width=.5, show.legend = FALSE) +
+    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
+    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+    coord_flip() +
+    xlab("") +
+    theme_minimal() 
+}
+
+create_top_10 <- function(stat) {
+  df <- reactive({
+    season_23_24 %>% 
+      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
+                                      "Selected", "Not Selected"),
+             stats = .data[[stat]]) %>%
+      arrange(desc(stats)) %>% 
+      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = PLAYER_NAME)) %>% 
+      slice_head(n = 10)
+  })
+  
+  
+  ggplot(df(), aes_string(x = "PLAYER_NAME", y = stat, fill = "PlayerSelected")) +
+    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
     scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() +
     xlab("") +
@@ -399,6 +419,64 @@ This tab is currently under development. Stay tuned!
 Row
 -----------------------------------------------------------------------
 
+LEADERS
+=======================================================================
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Points
+```{r}
+renderPlot({
+  create_top_10("PTS")
+})
+```
+
+
+### Assists
+```{r}
+renderPlot({
+  create_top_10("AST")
+})
+```
+
+
+### Turnovers
+```{r}
+renderPlot({
+  create_top_10("TOV")
+})
+```
+
+
+### Rebounds
+```{r}
+renderPlot({
+  create_top_10("REB")
+})
+```
+
+
+### Blocks
+```{r}
+renderPlot({
+  create_top_10("BLK")
+})
+```
+
+
+### Steals
+```{r}
+renderPlot({
+  create_top_10("STL")
+})
+```
+
+
+Row
+-----------------------------------------------------------------------
+### Western Ranking
+### Eastern Ranking
 
 TEAM ABBREVIATION
 =======================================================================
@@ -406,7 +484,7 @@ TEAM ABBREVIATION
 Row {data-height=550}
 -----------------------------------------------------------------------
 
-### TABLE 1
+### FRANCHISES
 ```{r}
 rosters <- season_23_24 %>% 
   select(TEAM_ABBREVIATION) %>% 
@@ -449,7 +527,7 @@ render_gt({
   rosters %>% 
     gt() %>% 
     tab_header(title = md(paste0(fontawesome::fa("basketball"), 
-                                 "   **NBA FRANCHISES LOVE THEM OR HATE THEM**   ",
+                                 "   **NBA FRANCHISES: LOVE THEM OR HATE THEM**   ",
                                  fontawesome::fa("basketball"))),
                # subtitle = md("*Low them or hate them*")
                ) %>% 
