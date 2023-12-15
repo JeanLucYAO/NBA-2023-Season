@@ -50,6 +50,7 @@ library(readr)
 library(shiny)
 library(flexdashboard)
 library(ggplot2)
+library(plotly)
 library(htmltools)
 
 # Load data
@@ -130,49 +131,55 @@ create_stat_plot <- function(stat) {
     scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() +
     labs(x = NULL, y = NULL) +
-    theme_minimal() 
+    theme_minimal()
+  
+  # return(ggplotly(p, tooltip = "y"))
+  # Create a reprex and open an issue on git hub for plotly not being consistent.
 }
 
 create_top_10 <- function(stat) {
   df <- reactive({
     players %>% 
-      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
-                                      "Selected", "Not Selected"),
-             stats = .data[[stat]]
-             ) %>%
+      mutate(stats = .data[[stat]]) %>%
       arrange(desc(stats)) %>% 
       mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = rev(unique(PLAYER_NAME)))) %>% 
       slice_head(n = 10)
   })
   
   
-  ggplot(df(), aes(x = PLAYER_NAME, y = stats, fill = PlayerSelected)) +
-    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
-    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+  q <- ggplot(df(), aes(x = PLAYER_NAME, y = stats)) +
+    geom_bar(stat = "identity", fill = "#1d428a", alpha = .6, width = .5, show.legend = F) +
     coord_flip() +
     labs(x = NULL, y = NULL) +
     theme_minimal() 
+  
+  return(ggplotly(q, tooltip = "y"))
 }
 
 create_ranking <- function(conf) { 
   df <- reactive({
     conf %>% 
-      mutate(TeamSelected = if_else(TEAM_NAME == input$teams,
-                                    "Selected", "Not Selected")) %>%
       arrange(W_PCT) %>% 
-      mutate(TEAM_NAME = factor(TEAM_NAME, levels = TEAM_NAME))
+      mutate(TeamSelected = case_when(row_number() %in% c(1:5) ~ "Eliminated",
+                                      row_number() %in% c(6:9) ~ "Play-in",
+                                      row_number() %in% c(10:15) ~ "Playoffs"),
+             TEAM_NAME = factor(TEAM_NAME, levels = TEAM_NAME))
   })
   
-  ggplot(df(), aes(x = TEAM_NAME, y = W_PCT, fill = TeamSelected)) +
+  t <- ggplot(df(), aes(x = TEAM_NAME, y = W_PCT, fill = TeamSelected)) +
     geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
-    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+    scale_fill_manual(values = c("Playoffs" = "#1d428a", 
+                                 "Play-in" = "#6F263D", 
+                                 "Eliminated" = "#212121")) +
     coord_flip() +
     labs(x = NULL, y = "Win Percentage") +
     theme_minimal() 
+  
+  return(ggplotly(t, tooltip = "y"))
 }
 ```
 
-SUMMARY 
+PLAYER SUMMARY 
 =======================================================================
 
 Row
@@ -382,6 +389,15 @@ renderPlot({
 ```
 
 
+
+TEAM SUMMARY {data-navmenu="Under Development"}
+=======================================================================
+
+This tab is currently under development. Stay tuned!
+
+Row
+-----------------------------------------------------------------------
+
 OFFENSE {data-navmenu="Under Development"}
 =======================================================================
 
@@ -471,7 +487,7 @@ Row {.tabset}
 
 ### Points
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("PTS")
 })
 ```
@@ -479,7 +495,7 @@ renderPlot({
 
 ### Assists
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("AST")
 })
 ```
@@ -487,7 +503,7 @@ renderPlot({
 
 ### Turnovers
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("TOV")
 })
 ```
@@ -495,7 +511,7 @@ renderPlot({
 
 ### Rebounds
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("REB")
 })
 ```
@@ -503,7 +519,7 @@ renderPlot({
 
 ### Blocks
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("BLK")
 })
 ```
@@ -511,7 +527,7 @@ renderPlot({
 
 ### Steals
 ```{r}
-renderPlot({
+renderPlotly({
   create_top_10("STL")
 })
 ```
@@ -522,7 +538,7 @@ Row
 
 ### Western Ranking
 ```{r}
-renderPlot({
+renderPlotly({
   create_ranking(west)
 })
 ```
@@ -530,7 +546,7 @@ renderPlot({
 
 ### Eastern Ranking
 ```{r}
-renderPlot({
+renderPlotly({
   create_ranking(east)
 })
 ```
