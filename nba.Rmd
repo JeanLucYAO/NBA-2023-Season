@@ -53,27 +53,35 @@ library(ggplot2)
 library(plotly)
 library(htmltools)
 
+# Load helper functions for graphs
+eval(parse("helpers.R", encoding = "UTF-8"))
+
 # Load data
-players <- read_csv("Clean/Players_2023-24.csv")
-east <- read_csv("Clean/East_2023-24.csv")
-west <- read_csv("Clean/West_2023-24.csv")
+players <- read_csv("Clean/Players_2023-24.csv") # All players stats
+east <- read_csv("Clean/East_2023-24.csv") # Eastern conference teams stats
+west <- read_csv("Clean/West_2023-24.csv") # Western conference teams stats
 ```
 
 
 Sidebar {.sidebar}
 =======================================================================
 ```{r}
+# A field to select an NBA team
 selectInput("teams",
             "SELECT A TEAM",
             choices = sort(unique(players$TEAM_NAME)),
             selected = "ATL")
 
+# A field to select an NBA player
 selectInput("players",
             "SELECT A PLAYER",
             choices = NULL)
 
-# Observe selection on Team input
+# Observe selection on Team input and update Player field with players  
+# belonging to the team
 observe({
+  
+  # Get the selected team
   team_selected <- input$teams
     
   # Check if team_selected is NULL or empty, return early if it is
@@ -81,14 +89,15 @@ observe({
     return()
   }
   
+  # Filter the players data set only on players for the selected team
   players_list <- players %>% 
     filter(TEAM_NAME == team_selected) %>% 
     select(PLAYER_NAME)
   
+  # Order them by name (A-Z)
   players_list <-  sort(unique(players_list$PLAYER_NAME))
   
-  # Update the Players based on the team selected,
-  # setting the choices to the relevant subset from the players list
+  # Finally, update the Players input with the selected players list
   updateSelectInput(session, 
                     "players",
                     label = "SELECT A PLAYER",
@@ -96,87 +105,28 @@ observe({
                     selected = players_list[1])
 })
 
+# current players list in the player input
 roster <- reactive({
   players %>% filter(TEAM_NAME == input$teams)
 })
 
+# Current player selected
 current <- reactive({
   players %>% filter(PLAYER_NAME == input$players)
 })
 
-
+# Display the logo of the selected team
 renderImage({
-  # Obtain the selected team name
+  
+  # Obtain the selected team abbreviation
   selected_team <- tolower(unique(roster()$TEAM_ABBREVIATION))
   
+  # Get the relevant .png file in www folder and display
   list(src = paste0("www/logo-", selected_team, ".png"),
        contentType = "image/png",
        width = "auto",
        height = "auto")
   }, deleteFile = F)
-
-create_stat_plot <- function(stat) {
-  df <- reactive({
-    roster() %>% 
-      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
-                                      "Selected", "Not Selected"),
-             stats = .data[[stat]]) %>%
-      arrange(desc(stats)) %>% 
-      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = rev(unique(PLAYER_NAME))))
-  })
-  
-  
-  ggplot(df(), aes(x = PLAYER_NAME, y = stats, fill = PlayerSelected)) +
-    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
-    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
-    coord_flip() +
-    labs(x = NULL, y = NULL) +
-    theme_minimal()
-  
-  # return(ggplotly(p, tooltip = "y"))
-  # Create a reprex and open an issue on git hub for plotly not being consistent.
-}
-
-create_top_10 <- function(stat) {
-  df <- reactive({
-    players %>% 
-      mutate(stats = .data[[stat]]) %>%
-      arrange(desc(stats)) %>% 
-      mutate(PLAYER_NAME = factor(PLAYER_NAME, levels = rev(unique(PLAYER_NAME)))) %>% 
-      slice_head(n = 10)
-  })
-  
-  
-  q <- ggplot(df(), aes(x = PLAYER_NAME, y = stats)) +
-    geom_bar(stat = "identity", fill = "#1d428a", alpha = .6, width = .5, show.legend = F) +
-    coord_flip() +
-    labs(x = NULL, y = NULL) +
-    theme_minimal() 
-  
-  return(ggplotly(q, tooltip = "y"))
-}
-
-create_ranking <- function(conf) { 
-  df <- reactive({
-    conf %>% 
-      arrange(W_PCT) %>% 
-      mutate(TeamSelected = case_when(row_number() %in% c(1:5) ~ "Eliminated",
-                                      row_number() %in% c(6:9) ~ "Play-in",
-                                      row_number() %in% c(10:15) ~ "Playoffs"),
-             TEAM_NAME = factor(TEAM_NAME, levels = TEAM_NAME))
-  })
-  
-  t <- ggplot(df(), aes(x = TEAM_NAME, y = W_PCT, fill = TeamSelected)) +
-    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
-    scale_fill_manual(values = c("Playoffs" = "#1d428a", 
-                                 "Play-in" = "#6F263D", 
-                                 "Eliminated" = "#212121")) +
-    coord_flip() +
-    labs(x = NULL, y = "Win Percentage") +
-    theme_minimal() 
-  
-  return(ggplotly(t, tooltip = "y"))
-}
 ```
 
 PLAYER SUMMARY 
@@ -187,6 +137,7 @@ Row
 
 ### Team 
 ```{r}
+# Which team the player selected belongs to
 renderValueBox({
   valueBox(
     value = current()$TEAM_ABBREVIATION,
@@ -200,6 +151,7 @@ renderValueBox({
 
 ### Age 
 ```{r}
+# What's the age of the player selected
 renderValueBox({
   valueBox(
     value = current()$AGE,
@@ -213,6 +165,7 @@ renderValueBox({
 
 ### Minutes per Game 
 ```{r}
+# What's the number of minutes he plays per game
 renderValueBox({
   valueBox(
     value = current()$MIN,
@@ -226,6 +179,7 @@ renderValueBox({
 
 ### Games Played
 ```{r}
+# What's the number games played 
 renderValueBox({
   valueBox(
     value = current()$GP,
@@ -239,6 +193,7 @@ renderValueBox({
 
 ### Points per Game 
 ```{r}
+# How many points he averages
 renderValueBox({
   valueBox(
     value = current()$PTS,
@@ -255,6 +210,7 @@ Row
 
 ### Field Goal Percentage
 ```{r}
+# What's his field goal (2 points + 3 points) percentage 
 renderGauge({
   gauge(value = 100 * current()$FG_PCT,
       min = 0,
@@ -269,6 +225,7 @@ renderGauge({
 
 ### Free Throw Percentage
 ```{r}
+# What's his free throw percentage 
 renderGauge({
   gauge(value = 100 * current()$FT_PCT,
       min = 0,
@@ -283,6 +240,7 @@ renderGauge({
 
 ### 3 Point Percentage
 ```{r}
+# What's his 3 points percentage 
 renderGauge({
   gauge(value = 100 * current()$FG3_PCT,
       min = 0,
@@ -300,6 +258,7 @@ Row
 
 ### Assists per Game 
 ```{r}
+# How many assists he averages per game
 renderValueBox({
   valueBox(
     value = current()$AST,
@@ -313,6 +272,7 @@ renderValueBox({
 
 ### Rebounds per Game 
 ```{r}
+# How many rebounds he averages per game
 renderValueBox({
   valueBox(
     value = current()$REB,
@@ -326,6 +286,7 @@ renderValueBox({
 
 ### Blocks per Game
 ```{r}
+# How many blocks he averages per game
 renderValueBox({
   valueBox(
     value = current()$BLK,
@@ -339,6 +300,7 @@ renderValueBox({
 
 ### Steals per Game
 ```{r}
+# How many steals he averages per game
 renderValueBox({
   valueBox(
     value = current()$STL,
@@ -352,6 +314,7 @@ renderValueBox({
 
 ### Turnovers per Game
 ```{r}
+# How many turnovers he averages per game
 renderValueBox({
   valueBox(
     value = current()$TOV,
@@ -367,6 +330,7 @@ Row {.tabset}
 
 ### Points Comparison
 ```{r}
+# How does his points average compare to his teammates 
 renderPlot({
   create_stat_plot("PTS")
 })
@@ -375,6 +339,7 @@ renderPlot({
 
 ### Assists Comparison
 ```{r}
+# How does his assists average compare to his teammates 
 renderPlot({
   create_stat_plot("AST")
 })
@@ -383,6 +348,7 @@ renderPlot({
 
 ### Rebounds Comparison
 ```{r}
+# How does his rebounds average compare to his teammates 
 renderPlot({
   create_stat_plot("REB")
 })
@@ -487,6 +453,7 @@ Row {.tabset}
 
 ### Points
 ```{r}
+# What are the to 10 scorers 
 renderPlotly({
   create_top_10("PTS")
 })
@@ -495,6 +462,7 @@ renderPlotly({
 
 ### Assists
 ```{r}
+# What are the to 10 passers
 renderPlotly({
   create_top_10("AST")
 })
@@ -503,6 +471,7 @@ renderPlotly({
 
 ### Turnovers
 ```{r}
+# What are the to 10 careless ball-handlers
 renderPlotly({
   create_top_10("TOV")
 })
@@ -511,6 +480,7 @@ renderPlotly({
 
 ### Rebounds
 ```{r}
+# What are the to 10 rebounders
 renderPlotly({
   create_top_10("REB")
 })
@@ -519,6 +489,7 @@ renderPlotly({
 
 ### Blocks
 ```{r}
+# What are the to 10 deniers
 renderPlotly({
   create_top_10("BLK")
 })
@@ -527,6 +498,7 @@ renderPlotly({
 
 ### Steals
 ```{r}
+# What are the to 10 active hands
 renderPlotly({
   create_top_10("STL")
 })
@@ -538,6 +510,7 @@ Row
 
 ### Western Ranking
 ```{r}
+# What's the ranking in the west
 renderPlotly({
   create_ranking(west)
 })
@@ -546,6 +519,7 @@ renderPlotly({
 
 ### Eastern Ranking
 ```{r}
+# What's the ranking in the east
 renderPlotly({
   create_ranking(east)
 })
