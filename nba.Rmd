@@ -127,6 +127,30 @@ renderImage({
        width = "auto",
        height = "auto")
   }, deleteFile = F)
+
+# A field to look for a player's team 
+textInput("search", 
+          "Search  Player's Team", 
+          value = "", 
+          placeholder = "Enter name")
+
+renderText({
+  
+  # Get the matching player name
+  found <- players %>% 
+    filter(grepl(tolower(input$search), tolower(PLAYER_NAME))) %>% 
+    unique()
+  
+  # Create message to display based on if we have a match or not
+  if (nrow(found) != 0 && input$search != "") {
+    verbose <- paste0(found$PLAYER_NAME, " plays for ", found$TEAM_NAME)
+  } else {
+    verbose <- "No matching yet, try to correct the spelling"
+  }
+  
+  # Display message
+  verbose
+})
 ```
 
 PLAYER SUMMARY {data-navmenu="SUMMARY"}
