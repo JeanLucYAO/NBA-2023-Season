@@ -19,6 +19,7 @@ It's always good to know what is going on in the NBA once in a while. So I built
 - [x] Fix `aes_string() was deprecated in ggplot2 3.0.0`
 - [x] Update the Ranking bar graph with playoffs, play-in and eliminated
 - [x] Add a tab for team summary stat
-- [ ] Add search option in sidebar to look for teams of players
+- [x] Add search option in sidebar to look for a player's team when we don't know
+- [ ] Fix *first time run error* in `Team Summary Tab`
 - [ ] Fix [deploy Batch file](deploy.bat), it's not working well
 - [ ] Create [a reprex](https://reprex.tidyverse.org/) and open an issue on Git Hub for `renderPlotly()` not being consistent
