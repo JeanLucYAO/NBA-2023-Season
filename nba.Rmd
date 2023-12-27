@@ -129,7 +129,7 @@ renderImage({
   }, deleteFile = F)
 ```
 
-PLAYER SUMMARY 
+PLAYER SUMMARY {data-navmenu="SUMMARY"}
 =======================================================================
 
 Row
@@ -354,15 +354,288 @@ renderPlot({
 })
 ```
 
+### Blocks Comparison
+```{r}
+# How does his blocks average compare to his teammates 
+renderPlot({
+  create_stat_plot("BLK")
+})
+```
 
 
-TEAM SUMMARY {data-navmenu="Under Development"}
+### Steals Comparison
+```{r}
+# How does his steals average compare to his teammates 
+renderPlot({
+  create_stat_plot("STL")
+})
+```
+
+
+### Turnovers Comparison
+```{r}
+# How does his turnovers average compare to his teammates 
+renderPlot({
+  create_stat_plot("TOV")
+})
+```
+
+
+
+TEAM SUMMARY {data-navmenu="SUMMARY"}
 =======================================================================
 
-This tab is currently under development. Stay tuned!
+```{r}
+# Choose the proper team data set according to the selection
+team_df <- reactive({
+  if (current()$CONFERENCE == "East") {
+    east %>% filter(TEAM_NAME == input$teams)
+  } else {
+    west %>% filter(TEAM_NAME == input$teams)
+  }
+})
+
+# Choose the proper conference team data set according to the selection
+conf_df <- reactive({
+  if (current()$CONFERENCE == "East") {
+    east 
+  } else {
+    west 
+  }
+})
+```
+
 
 Row
 -----------------------------------------------------------------------
+### Conference
+```{r}
+# What's the team's conference 
+renderValueBox({
+  valueBox(
+    value = team_df()$CONFERENCE,
+    caption = "Conference",
+    icon = "fa-compass",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Games Played
+```{r}
+# What's the number games played 
+renderValueBox({
+  valueBox(
+    value = team_df()$GP,
+    caption = "Games Played",
+    icon = "fa-calendar-check",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Win Percentage
+```{r}
+# What's the ratio of wins 
+renderValueBox({
+  valueBox(
+    value = 100 * team_df()$W_PCT,
+    caption = "% Wins",
+    icon = "fa-trophy",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Points per Game
+```{r}
+# How many points it averages
+renderValueBox({
+  valueBox(
+    value = team_df()$PTS,
+    caption = "Points Per Game",
+    icon = "fa-basketball",
+    color = "#1d428a"
+  )
+})
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Field Goal Percentage
+```{r}
+# What's its field goal (2 points + 3 points) percentage 
+renderGauge({
+  gauge(value = 100 * team_df()$FG_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(40, 100), warning = c(20, 40), danger = c(0, 20),
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
+  )
+})
+```
+
+
+### Free Throw Percentage
+```{r}
+# What's its free throw percentage 
+renderGauge({
+  gauge(value = 100 * team_df()$FT_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(75, 100), warning = c(60, 75), danger = c(0, 60),
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
+  )
+})
+```
+
+
+### 3 Points Percentage
+```{r}
+# What's its 3 points percentage 
+renderGauge({
+  gauge(value = 100 * team_df()$FG3_PCT,
+      min = 0,
+      max = 100,
+      symbol = '%', 
+      gaugeSectors(success = c(35, 100), warning = c(20, 35), danger = c(0, 20),
+                   colors = c("#0c4e24", "#FDBB30", "#ce1141"))
+  )
+})
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Assists per Game 
+```{r}
+# How many assists it averages per game
+renderValueBox({
+  valueBox(
+    value = team_df()$AST,
+    caption = "Assists Per Game",
+    icon = "fa-handshake-angle",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Rebounds per Game 
+```{r}
+# How many rebounds it averages per game
+renderValueBox({
+  valueBox(
+    value = team_df()$REB,
+    caption = "Rebounds Per Game",
+    icon = "fa-hands-holding-circle",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Blocks per Game
+```{r}
+# How many blocks it averages per game
+renderValueBox({
+  valueBox(
+    value = team_df()$BLK,
+    caption = "Blocks Per Game",
+    icon = "fa-hand-point-up",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Steals per Game
+```{r}
+# How many steals it averages per game
+renderValueBox({
+  valueBox(
+    value = team_df()$STL,
+    caption = "Steals Per Game",
+    icon = "fa-people-robbery",
+    color = "#1d428a"
+  )
+})
+```
+
+
+### Turnovers per Game
+```{r}
+# How many turnovers it averages per game
+renderValueBox({
+  valueBox(
+    value = team_df()$TOV,
+    caption = "Turnovers Per Game",
+    icon = "fa-person-walking-arrow-loop-left",
+    color = "#1d428a"
+  )
+})
+```
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Points Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("PTS")
+})
+```
+
+
+### Assists Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("AST")
+})
+```
+
+
+### Rebounds Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("REB")
+})
+```
+
+
+### Blocks Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("BLK")
+})
+```
+
+
+### Steals Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("STL")
+})
+```
+
+
+### Turnovers Comparison
+```{r}
+renderPlot({
+  create_team_stat_plot("TOV")
+})
+```
+
+
+
 
 OFFENSE {data-navmenu="Under Development"}
 =======================================================================

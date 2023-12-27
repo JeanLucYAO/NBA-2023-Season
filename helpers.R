@@ -3,15 +3,15 @@
 ###############################################################
 
 
-# Bar plot of selected team's players for a specific stat
+# Bar plot of selected team players for a specific stat
 # 
-# @param stat: a numeric vector, basically a column in the players 
-#              data set representing any statistics you want to plot
+# @param stat: a string, basically the name of a column in the data set
+#              representing any statistics you want to plot
 # 
 # @return a ggplot object (bar graph)
 # 
 # @examples: `create_stat_plot("REB")` outputs a bar graph of the number
-#            of rebounds per game 
+#            of rebounds per game of a selected player.
 create_stat_plot <- function(stat) {
   
   # Identify which player is selected in order to highlight his bar in a 
@@ -27,6 +27,40 @@ create_stat_plot <- function(stat) {
   
   # create the bar graph with ggplot
   ggplot(df(), aes(x = PLAYER_NAME, y = stats, fill = PlayerSelected)) +
+    geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
+    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+    coord_flip() + # flip the coordinates to make the names readable
+    labs(x = NULL, y = NULL) +
+    theme_minimal()
+  
+  # return(ggplotly(p, tooltip = "y"))
+  # Create a reprex and open an issue on git hub for plotly not being consistent.
+}
+
+# Bar plot of conference teams for a specific stat
+# 
+# @param stat: a string, basically the name of a column in the data set
+#              representing any statistics you want to plot
+# 
+# @return a ggplot object (bar graph)
+# 
+# @examples: `create_stat_plot("REB")` outputs a bar graph of the number
+#            of rebounds per game of each team in a conf.
+create_team_stat_plot <- function(stat) {
+  
+  # Identify which team is selected in order to highlight his bar in a 
+  # different color, and order the players by stat
+  df <- reactive({
+    conf_df() %>% 
+      mutate(teamSelected = if_else(TEAM_NAME == input$teams, 
+                                      "Selected", "Not Selected"),
+             stats = .data[[stat]]) %>%
+      arrange(desc(stats)) %>% # order teams from the highest to lowest stat
+      mutate(TEAM_NAME = factor(TEAM_NAME, levels = rev(unique(TEAM_NAME))))
+  })
+  
+  # create the bar graph with ggplot
+  ggplot(df(), aes(x = TEAM_NAME, y = stats, fill = teamSelected)) +
     geom_bar(stat = "identity", alpha = .6, width = .5, show.legend = F) +
     scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
     coord_flip() + # flip the coordinates to make the names readable
