@@ -52,6 +52,7 @@ library(flexdashboard)
 library(ggplot2)
 library(plotly)
 library(htmltools)
+library(ggrepel)
 
 # Load helper functions for graphs
 eval(parse("helpers.R", encoding = "UTF-8"))
@@ -404,6 +405,32 @@ renderPlot({
 })
 ```
 
+
+Row
+-----------------------------------------------------------------------
+
+### Player Usage
+```{r}
+renderPlot({
+  
+  df <- roster() %>% 
+      mutate(PlayerSelected = if_else(PLAYER_NAME == input$players, 
+                                      "Selected", "Not Selected"))
+  
+  half <- round(max(df$GP) / 2)
+  
+  ggplot(df, aes(x = MIN, y = GP, color = PlayerSelected)) +
+    geom_point() +
+    geom_text_repel(aes(label = PLAYER_NAME), nudge_x = 0.5, nudge_y = 0.5) +
+    geom_hline(yintercept = half, linetype = "dotted", size = .6) +
+    geom_vline(xintercept = 20, linetype = "dotted", size = .6) +
+    scale_fill_manual(values = c("Selected" = "#6F263D", "Not Selected" = "#1d428a")) +
+    labs(x = "Minutes per game", y = "Games played") +
+    theme(legend.position = "none") +
+    theme_minimal()
+    
+})
+```
 
 
 TEAM SUMMARY {data-navmenu="SUMMARY"}
