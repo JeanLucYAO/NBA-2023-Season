@@ -31,9 +31,9 @@ require_packages("dplyr", "readr")
 
 ### 1. Load Data
 ```{r}
-players <- read_csv("Data/Players_2023-24.csv")
-east <- read_csv("Data/Teams_East_2023-24.csv")
-west <- read_csv("Data/Teams_West_2023-24.csv")
+players <- read_csv("Data/Players_2024-25.csv")
+east <- read_csv("Data/Teams_East_2024-25.csv")
+west <- read_csv("Data/Teams_West_2024-25.csv")
 ```
 
 
@@ -81,14 +81,14 @@ clean_players <- clean_teams %>%
 ```{r}
 # Check if there are 30 franchises and write data
 if (nrow(clean_teams) == 30) {
-  write_csv(clean_east, "Clean/East_2023-24.csv")
-  write_csv(clean_west, "Clean/West_2023-24.csv")
+  write_csv(clean_east, "Clean/East_2024-25.csv")
+  write_csv(clean_west, "Clean/West_2024-25.csv")
 } else {
   print("There are more than 30 franchises in your teams data !!!")
 }
 
 if (length(unique(clean_players$TEAM_ID)) == 30) {
-  write_csv(clean_players, "Clean/Players_2023-24.csv")
+  write_csv(clean_players, "Clean/Players_2024-25.csv")
 } else {
   print("There are more than 30 franchises in your players data !!!")
 }

@@ -19,7 +19,7 @@ headers  = {
     'Accept-Language': 'en-US,en;q=0.9',
 }
 ## Seasons available 
-season_list = ['2023-24']
+season_list = ['2024-25']
 conference = ['East', 'West']
 
 ## Headers of players' dataframe

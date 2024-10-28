@@ -1,5 +1,5 @@
 ---
-title: "STATISTICS 2023-2024"
+title: "STATISTICS 2024-2025"
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
@@ -58,9 +58,9 @@ library(ggrepel)
 eval(parse("helpers.R", encoding = "UTF-8"))
 
 # Load data
-players <- read_csv("Clean/Players_2023-24.csv") # All players stats
-east <- read_csv("Clean/East_2023-24.csv") # Eastern conference teams stats
-west <- read_csv("Clean/West_2023-24.csv") # Western conference teams stats
+players <- read_csv("Clean/Players_2024-25.csv") # All players stats
+east <- read_csv("Clean/East_2024-25.csv") # Eastern conference teams stats
+west <- read_csv("Clean/West_2024-25.csv") # Western conference teams stats
 ```
 
 
